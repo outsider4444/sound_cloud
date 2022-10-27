@@ -1,3 +1,4 @@
+from django.contrib.auth.models import AbstractUser
 from django.core.validators import FileExtensionValidator
 from django.db import models
 
@@ -5,7 +6,7 @@ from django.db import models
 from src.base.services import get_path_upload_avatar, validate_size_image
 
 
-class AuthUser(models.Model):
+class AuthUser(AbstractUser):
     """Пользователь"""
     email = models.EmailField(max_length=200, unique=True)
     join_date = models.DateTimeField(auto_now=True)
