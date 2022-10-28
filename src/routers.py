@@ -19,5 +19,6 @@ schema_view = get_schema_view(
 urlpatterns = [
     re_path(r'^auth/', include('drf_social_oauth2.urls', namespace='drf')),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('api/v1/auth/', include('src.oauth.urls'))
+    path('api/v1/auth/', include('src.oauth.urls')),
+    path('audio/', include('src.audio_library.urls')),
 ]
