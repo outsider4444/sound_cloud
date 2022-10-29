@@ -4,13 +4,13 @@ from rest_framework import viewsets, parsers, permissions
 # Create your views here.
 from src.base.permissions import IsAuthor
 from src.oauth.models import AuthUser
-from src.oauth.serializers import UserSerializer, AuthorSerializer, SocialLinkSerializer
+from src.oauth.serializers import UsersSerializer, AuthorSerializer, SocialLinkSerializer
 
 
 class UserView(viewsets.ModelViewSet):
     """Просмотр и редактирование данных пользователя"""
     parser_classes = (parsers.MultiPartParser,)
-    serializer_class = UserSerializer
+    serializer_class = UsersSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):

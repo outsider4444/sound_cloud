@@ -1,6 +1,7 @@
 import os.path
+from datetime import timedelta
 from pathlib import Path
-
+from oauth2_provider import settings as oauth2_settings
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -28,6 +29,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
+    'rest_framework.authtoken',
     'drf_yasg',
 
     'oauth2_provider',
@@ -136,31 +138,29 @@ AUTHENTICATION_BACKENDS = [
     'social_core.backends.vk.VKOAuth2',
     'drf_social_oauth2.backends.DjangoOAuth2',
     'django.contrib.auth.backends.ModelBackend',
+
 ]
 
-SOCIAL_AUTH_VK_OAUTH2_KEY = '	8229285'
+SOCIAL_AUTH_VK_OAUTH2_KEY = '8229285'
 SOCIAL_AUTH_VK_OAUTH2_SECRET = 'DO7iSQWXwvnWBFj7AWsO'
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'social_django.context_processors.backends',
-    'social_django.context_processors.login_redirect',
-)
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'oauth2_provider.ext.rest_framework.OAuth2Authentication',  # django-oauth-toolkit < 1.0.0
-        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  # django-oauth-toolkit >= 1.0.0
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
         'drf_social_oauth2.authentication.SocialAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+
     ),
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny'
     ]
 }
+
 AUTH_USER_MODEL = 'oauth.AuthUser'
 
-
 SWAGGER_SETTINGS = {
-    'SECURITY_DEFINITIONS':{
+    'SECURITY_DEFINITIONS': {
         'Bearer': {
             'type': 'apiKey',
             'name': 'Authorization',
