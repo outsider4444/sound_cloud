@@ -4,9 +4,16 @@ from django.db import models
 from src.base.services import (
     get_path_upload_cover_album,
     validate_size_image,
-    get_path_upload_track, get_path_upload_cover_playlist
+    get_path_upload_track, get_path_upload_cover_playlist, get_path_upload_cover_track
 )
 from src.oauth.models import AuthUser
+
+
+class Author(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
 
 
 class License(models.Model):
@@ -41,7 +48,7 @@ class Album(models.Model):
 class Track(models.Model):
     """Модель музыки"""
     user = models.ForeignKey(AuthUser, on_delete=models.CASCADE, related_name='tracks')
-    author = models.CharField(max_length=100, null=True, blank=True)
+    author = models.ForeignKey(Author, null=True, blank=True, on_delete=models.SET_NULL, related_name="authors")
     title = models.CharField(max_length=100)
     text = models.TextField(null=True, blank=True)
     license = models.ForeignKey(License, on_delete=models.PROTECT, related_name='license_tracks')
@@ -58,6 +65,13 @@ class Track(models.Model):
     download = models.PositiveIntegerField(default=0)
     likes_count = models.PositiveIntegerField(default=0)
     user_of_likes = models.ManyToManyField(AuthUser, related_name='likes_of_tracks')
+    private = models.BooleanField(default=False)
+    cover = models.ImageField(
+        upload_to=get_path_upload_cover_track,
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(allowed_extensions=['jpg']), validate_size_image]
+    )
 
     def __str__(self):
         return f'{self.user} - {self.title}'

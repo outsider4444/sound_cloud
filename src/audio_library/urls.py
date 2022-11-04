@@ -8,6 +8,9 @@ urlpatterns = [
     path('license/', views.LicenseView.as_view({'get': 'list', 'post': 'create'})),
     path('license/<int:pk>/', views.LicenseView.as_view({'put': 'update', 'delete': 'destroy'})),
 
+    path('author/', views.AuthorView.as_view({'get': 'list', 'post': 'create'})),
+    path('author/<int:pk>/', views.AuthorView.as_view({'put': 'update', 'delete': 'destroy'})),
+
     path('album/', views.AlbumView.as_view({'get': 'list', 'post': 'create'})),
     path('album/<int:pk>/', views.AlbumView.as_view({'put': 'update', 'delete': 'destroy'})),
 
@@ -21,6 +24,11 @@ urlpatterns = [
 
     path('track-list/', views.TrackListView.as_view()),
     path('author-track-list/<int:pk>/', views.AuthorTrackListView.as_view()),
+
+    path('comments/', views.CommentAuthorView.as_view({'get': 'list', 'post': 'create'})),
+    path('comments/<int:id>/', views.CommentAuthorView.as_view({'put': 'update', 'delete': 'destroy'})),
+
+    path('comment_by_track/<int:id>/', views.CommentView.as_view({'get': 'list'})),
 
     path('playlist/', views.PlayListView.as_view({'get': 'list', 'post': 'create'})),
     path('playlist/<int:pk>', views.PlayListView.as_view({'put': 'update', 'delete': 'destroy'})),

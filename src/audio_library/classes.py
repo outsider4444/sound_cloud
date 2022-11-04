@@ -2,7 +2,7 @@ from rest_framework.pagination import PageNumberPagination
 
 
 class MixedSerializer:
-    """"""
+    """ Serializer action's mixin"""
     def get_serializer(self, *args, **kwargs):
         try:
             serializer_class = self.serializer_classes_by_action[self.action]

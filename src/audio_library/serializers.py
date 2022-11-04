@@ -1,19 +1,20 @@
 from rest_framework import serializers
 from . import models
 from ..base.services import delete_old_file
+from ..oauth.serializers import AuthorSerializer
 
 
 class BaseSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
 
 
-class GenreSerializers(serializers.ModelSerializer):
+class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Genre
         fields = ('id', 'name', )
 
 
-class LicenseSerializers(serializers.ModelSerializer):
+class LicenseSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.License
         fields = ('id', 'text', )
@@ -29,15 +30,18 @@ class AlbumSerializer(BaseSerializer):
         return super().update(instance, validated_data)
 
 
-class CreateAuthorSerializer(BaseSerializer):
+class CreateAuthorTrackSerializer(BaseSerializer):
     plays_count = serializers.IntegerField(read_only=True)
     download = serializers.IntegerField(read_only=True)
+    user = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = models.Track
         fields = (
             'id',
             'title',
+            'author',
+            'text',
             'license',
             'genre',
             'album',
@@ -46,17 +50,22 @@ class CreateAuthorSerializer(BaseSerializer):
             'create_at',
             'plays_count',
             'download',
+            'private',
+            'cover',
+            'user',
         )
 
     def update(self, instance, validated_data):
         delete_old_file(instance.file.path)
+        delete_old_file(instance.cover.path)
         return super().update(instance, validated_data)
 
 
-class AuthorTrackSerializer(CreateAuthorSerializer):
-    license = LicenseSerializers()
-    genre = GenreSerializers(many=True)
+class AuthorTrackSerializer(CreateAuthorTrackSerializer):
+    license = LicenseSerializer()
+    genre = GenreSerializer(many=True)
     album = AlbumSerializer()
+    user = AuthorSerializer()
 
 
 class CreatePlayListSerializer(BaseSerializer):
@@ -73,5 +82,23 @@ class PlayListSerializer(CreatePlayListSerializer):
     tracks = AuthorTrackSerializer(many=True, read_only=True)
 
 
-# todo Вывод текста песни (если есть).
-# todo Вывод автора
+class AuthorCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Author
+        fields = "__all__"
+
+
+class CommentAuthorSerializer(serializers.ModelSerializer):
+    """Комментарии"""
+
+    class Meta:
+        model = models.Comment
+        fields = ('id', 'text', 'track')
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    user = AuthorSerializer()
+
+    class Meta:
+        model = models.Comment
+        fields = ('id', 'text', 'user', 'track', 'create_at')

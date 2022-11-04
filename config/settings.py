@@ -31,6 +31,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'drf_yasg',
+    'django_filters',
+    'corsheaders',
 
     'oauth2_provider',
     'social_django',
@@ -45,6 +47,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -83,8 +86,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': os.environ.get("POSTGRES_ENGINE", 'django.db.backends.sqlite3'),
+        'NAME': os.environ.get("POSTGRES_DB", os.path.join(BASE_DIR, "db.sqlite3")),
+        'USER': os.environ.get("POSTGRES_USER", "user"),
+        'PASSWORD': os.environ.get("POSTGRES_PASSWORD", "password"),
+        'HOST': os.environ.get("POSTGRES_HOST", 'localhost'),
+        'PORT': os.environ.get("POSTGRES_PORT", "5432")
     }
 }
 
@@ -124,6 +131,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -141,8 +149,8 @@ AUTHENTICATION_BACKENDS = [
 
 ]
 
-SOCIAL_AUTH_VK_OAUTH2_KEY = '8229285'
-SOCIAL_AUTH_VK_OAUTH2_SECRET = 'DO7iSQWXwvnWBFj7AWsO'
+SOCIAL_AUTH_VK_OAUTH2_KEY = os.environ.get("SOCIAL_AUTH_VK_OAUTH2_KEY")
+SOCIAL_AUTH_VK_OAUTH2_SECRET = os.environ.get("SOCIAL_AUTH_VK_OAUTH2_SECRET")
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -154,7 +162,8 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny'
-    ]
+    ],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
 
 AUTH_USER_MODEL = 'oauth.AuthUser'
@@ -168,3 +177,10 @@ SWAGGER_SETTINGS = {
         }
     }
 }
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost",
+    "http://localhost:8080",
+    "http://127.0.0.1:8000",
+    "http://127.0.0.1",
+]
